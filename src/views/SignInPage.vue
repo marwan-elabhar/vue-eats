@@ -1,7 +1,8 @@
 <script setup>
 import {ref} from 'vue'
 import {useFirebaseAuth} from "vuefire"
-import {createUserWithEmailAndPassword} from "@firebase/auth"
+import {useRouter} from 'vue-router'
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth"
 import BaseButton from '@/components/base/BaseButton.vue'
 import BaseContainer from '@/components/base/BaseContainer.vue'
 import BaseCard from '@/components/base/BaseCard.vue'
@@ -14,6 +15,7 @@ const newUser = ref({
 })
 
 const auth = useFirebaseAuth()
+const router = useRouter()
 
 async function createUser() {
   createUserWithEmailAndPassword(auth, newUser.value.email, newUser.value.password)
@@ -23,6 +25,13 @@ async function createUser() {
       .catch(() => {
 
       })
+}
+
+async function signInToFirebase() {
+  signInWithEmailAndPassword(auth, newUser.value.email, newUser.value.password).then((userCredential) => {
+    const user = userCredential.user
+    router.push('/')
+  })
 }
 
 </script>
@@ -49,7 +58,7 @@ async function createUser() {
         </BaseForm>
       </template>
       <template v-slot:actions>
-        <BaseButton variant="tonal" color="success"> Sign In</BaseButton>
+        <BaseButton variant="tonal" color="success" @click="signInToFirebase()"> Sign In</BaseButton>
         <BaseButton @click="createUser()" variant="tonal" color="secondary" outline>
           Create New User
         </BaseButton>
