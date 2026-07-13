@@ -1,10 +1,13 @@
 <script setup>
 import { computed } from 'vue'
+import { deleteDoc, doc } from 'firebase/firestore'
+import {useFirestore} from 'vuefire'
 import BaseButton from '@/components/base/BaseButton.vue'
 import BaseIcon from '@/components/base/BaseIcon.vue'
 import BaseImageCard from '@/components/base/BaseImageCard.vue'
 import BaseRating from '@/components/base/BaseRating.vue'
 import CafeImage from '@/components/CafeImage.vue'
+
 
 const props = defineProps({
   description: {
@@ -51,6 +54,12 @@ const priceSymbol = computed(() => {
       return 'No price defined'
   }
 })
+
+const db = useFirestore()
+
+async function deleteCafe() {
+  await deleteDoc(doc(db, "cafes", props.docId))
+}
 </script>
 
 <template>
@@ -91,7 +100,7 @@ const priceSymbol = computed(() => {
       <BaseButton color="primary" :to="`/cafe/${docId}`">
         <BaseIcon icon="mdi-pencil" class="mr-1" /> Edit
       </BaseButton>
-      <BaseButton color="error" text disabled>
+      <BaseButton color="error" text @click="deleteCafe">
         <BaseIcon icon="mdi-trash-can-outline" class="mr-1" />
         Delete
       </BaseButton>
